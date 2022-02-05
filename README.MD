@@ -2,6 +2,10 @@
 ## Description
 This project is to test the pyautogui library.
 
+## Python Installation
+* you can install the required packages using the requirement.txt<br>
+  <code>pip install -r requirements.txt</code>
+
 ## Project Test
 Azur Lane - Stage 12 Automation
 * Limitation: pyautogui has difficulty with scaled GUI images. Therefore, i wrote a script to create a scaled image. But it is not perfect
