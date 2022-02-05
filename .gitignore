@@ -1,0 +1,9 @@
+venv/
+.idea/
+try/
+__pycache__
+azurlane/__pycache__
+log
+!azurlane/GUI
+azurlane/GUI/*
+!azurlane/GUI/*.png
