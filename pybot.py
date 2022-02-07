@@ -64,9 +64,11 @@ def main():
                                  "is able to identify gui buttons on emulator"
 
     # Initialize Back Button by using location of Secretary Image
-    coords = init_back_btn(gui_path)
+    back_coords = init_btn(gui_path / "secretary_image.png")
+    # Get Battle Button coords from Main Screen
+    battle_coords = init_btn(gui_path / "battle.png")
 
-    al_stg = Stage(gui_path, coords, log)
+    al_stg = Stage(gui_path, back_coords, battle_coords, log)
 
     if not args.test_gui_img:  # if true means only want to run scaler
         log.info(f"{h.trace()} Press Keyboard 'q' to Quit ...")
@@ -74,10 +76,10 @@ def main():
             al_stg.run()
 
 
-def init_back_btn(gui_path, num_retry=10):
+def init_btn(img_path, num_retry=10):
     retry = 0
     while retry < num_retry + 1:
-        back_btn = Button(gui_path / "secretary_image.png")
+        back_btn = Button(img_path)
         if back_btn.exist():
             log.info(f"{h.trace()} Found Button Location of Secretary Image.")
             return back_btn.get_coords()
