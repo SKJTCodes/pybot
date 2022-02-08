@@ -1,7 +1,8 @@
 import logging
 import pathlib
-from pathlib import Path
+import sys
 import time
+from pathlib import Path
 from typing import Union, Set
 
 import helper as h
@@ -26,8 +27,11 @@ class Stage:
 
         self.back_btn = Button(coords=back_coords)
         self.battle_btn = Button(coords=battle_coords)
+        self.listener = None
 
-    def run(self):
+    def run(self, listener):
+        self.listener = listener
+
         # click on stage 12
         stage_12 = Button(self.gui_path / "stage_12.png")
         if stage_12.exist():
@@ -95,7 +99,12 @@ class Stage:
 
         # iteratively enhance until unable to
         while True:
-            self._enhance_process()
+            result = self._enhance_process()
+            if result == 'break':
+                break
+            if not self.listener.running:
+                self.log.info(f"{h.trace()} Force Ending Process")
+                sys.exit(1)
 
     def _enhance_process(self):
         fill_btn = Button(self.gui_path / "fill.png", confidence=0.7)
@@ -108,7 +117,7 @@ class Stage:
             self.log.info(f"{h.trace()} Not Enough to enhance ...")
             self.log.info(f"{h.trace()} Click Back Button ...")
             self.back_btn.click_win32()
-            return
+            return 'break'
 
         enhance2_btn = Button(self.gui_path / "enhance.png")
         if enhance2_btn.exist():
@@ -120,7 +129,7 @@ class Stage:
             self.log.info(f"{h.trace()} Not Enough to enhance ...")
             self.log.info(f"{h.trace()} Click Back Button ...")
             self.back_btn.click_win32()
-            return
+            return 'break'
 
         # Continue to disassemble Gear
         cont_btn = Button(self.gui_path / "confirm.png")
@@ -138,5 +147,4 @@ class Stage:
             self.log.info(f"{h.trace()} Click Tap to continue ...")
             tap_cont.click_win32()
 
-
-
+        return 'continue'
