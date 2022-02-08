@@ -16,3 +16,4 @@ azurlane/GUI/*
 !helper.py
 !Logger.py
 !pybot.py
+!azurlane/*.py
