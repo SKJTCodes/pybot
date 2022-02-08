@@ -81,11 +81,11 @@ def init_btn(img_path, num_retry=10):
     while retry < num_retry + 1:
         back_btn = Button(img_path)
         if back_btn.exist():
-            log.info(f"{h.trace()} Found Button Location of Secretary Image.")
+            log.info(f"{h.trace()} Found Button Location of {img_path.name}.")
             return back_btn.get_coords()
 
         retry += 1
-        log.debug(f"{h.trace()} Retry ({retry}/3) to find secretary_image")
+        log.debug(f"{h.trace()} Retry ({retry}/3) to find {img_path.name}")
 
     log.error(f"{h.trace()} Unable to find suitable GUI images for pybot. Please edit --num_gui_gen and --gui_scale "
               f"so that pybot is able to identify gui buttons on emulator")
