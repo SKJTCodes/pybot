@@ -2,7 +2,7 @@ import imghdr
 import logging
 import pathlib
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 from tqdm import tqdm
 import cv2
 import shutil
@@ -15,12 +15,15 @@ class Scaler:
     def __init__(self,
                  src_path: Union[pathlib.PurePath, str],
                  ship_path: Union[pathlib.PurePath, str],
+                 secretary_path: Union[pathlib.PurePath, str],
                  log: logging,
                  dst_path: Union[pathlib.PurePath, str] = None):
         self.log = log
 
+        self.secretary_path = Path(secretary_path) if isinstance(secretary_path, str) else secretary_path
         self.src_path = Path(src_path) if isinstance(src_path, str) else src_path
         self.ship_path = Path(ship_path) if isinstance(ship_path, str) else ship_path
+        assert self.secretary_path.is_dir(), f"{self.secretary_path} not Found."
         assert self.src_path.is_dir(), f"{self.src_path} not Found."
         assert self.ship_path.is_dir(), f"{self.ship_path} not Found."
 
@@ -38,8 +41,9 @@ class Scaler:
         assert (num_to_gen * scale_percent) <= 0.99, f"Please change num_to_gen or scale_percent. " \
                                                      f"Incompatible combination. Check: {scale_percent * num_to_gen}"
         scale = 1 - scale_percent
+
+        paths = self._get_img_paths()
         for i in tqdm(range(num_to_gen), total=num_to_gen, desc="Down Scaling GUI"):
-            paths = [x for x in self.src_path.iterdir() if x.is_file()] + [x for x in self.ship_path.iterdir()]
             for img_path in paths:
                 if imghdr.what(str(img_path)) is None:
                     continue
@@ -61,8 +65,6 @@ class Scaler:
         # create a folder for original images
         ori_dst = self.dst_path / "1_0"
         ori_dst.mkdir(parents=True, exist_ok=True)
-        paths = [x for x in self.src_path.iterdir() if x.is_file()] + [
-            x for x in self.ship_path.iterdir() if x.is_file()]
         for image_path in paths:
             if imghdr.what(image_path) is None:
                 continue
@@ -106,7 +108,8 @@ class Scaler:
 
                 gone_through.append(img_name)
 
-    def _sort_paths(self, path_list):
+    @staticmethod
+    def _sort_paths(path_list):
         data = {}
         for x in path_list:
             data.update({float(x.name.replace("_", ".")): x})
@@ -116,3 +119,10 @@ class Scaler:
             ret_list.append(data[x])
 
         return ret_list
+
+    def _get_img_paths(self) -> List[pathlib.PurePath]:
+        gui_paths = [x for x in self.src_path.iterdir() if x.is_file()]
+        enhance_paths = [x for x in self.ship_path.iterdir()]
+        sec_paths = [x for x in self.secretary_path.iterdir()]
+        paths = gui_paths + enhance_paths + sec_paths
+        return paths
