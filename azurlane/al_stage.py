@@ -58,64 +58,14 @@ class Stage:
             ships = [x for x in self.gui_path.iterdir() if "ship" in x.name]
 
             for ship in ships:
-                self.log.info(f"{h.trace()} Enhancing {ship.name}")
-                retry, clicked = 0, False
-                while retry < retries + 1:
-                    ship_btn = Button(ship)
-                    if ship_btn.exist():
-                        self.log.info(f"{h.trace()} Clicked Ship1 ...")
-                        ship_btn.click_win32()
-                        clicked = True
-                        break
-                    else:
-                        retry += 1
-                        self.log.debug(f"{h.trace()} Retrying ({retry}/{retries}) Find {ship.name} btn")
-
-                if not clicked:
-                    continue
-
-                # iteratively enhance until unable to
-                while True:
-                    fill_btn = Button(self.gui_path / "fill.png", confidence=0.7)
-                    if fill_btn.exist():
-                        self.log.info(f"{h.trace()} Clicked Fill Btn ...")
-                        fill_btn.click_win32()
-
-                    not_enough = Button(self.gui_path / "not_enough.png")
-                    if not_enough.exist():
-                        self.log.info(f"{h.trace()} Not Enough to enhance ...")
-                        self.log.info(f"{h.trace()} Click Back Button ...")
-                        self.back_btn.click_win32()
-                        break
-
-                    enhance2_btn = Button(self.gui_path / "enhance.png")
-                    if enhance2_btn.exist():
-                        self.log.info(f"{h.trace()} Clicked Enhance Gold ...")
-                        enhance2_btn.click_win32()
-
-                    # Continue to disassemble Gear
-                    cont_btn = Button(self.gui_path / "confirm.png")
-                    if cont_btn.exist():
-                        self.log.info(f"{h.trace()} Clicked Confirm ...")
-                        cont_btn.click_win32()
-
-                    dis_btn = Button(self.gui_path / "disassemble.png")
-                    if dis_btn.exist():
-                        self.log.info(f"{h.trace()} Click Disassemble ...")
-                        dis_btn.click_win32()
-
-                    tap_cont = Button(self.gui_path / "ttc.png")
-                    if tap_cont.exist():
-                        self.log.info(f"{h.trace()} Click Tap to continue ...")
-                        tap_cont.click_win32()
+                self._enhance_ship(ship, retries=retries)
 
             self.log.info(f"Done with enhancing.")
             self.log.info(f"{h.trace()} Click Back Button ...")
             self.back_btn.click_win32()
-            time.sleep(3)
-            # click screen to continue farming
 
             retry = 0
+            time.sleep(3)
             while retry < retries + 1:
                 as_btn = Button(self.gui_path / 'auto-search.png')
                 if as_btn.exist():
@@ -123,13 +73,70 @@ class Stage:
                     as_btn.click_win32()
                     break
                 else:
-                    retry += 1
                     self.log.debug(f"{h.trace()} Retrying ({retry}/{retries}) Find Auto-search btn")
+                    retry += 1
 
+    def _enhance_ship(self, ship_gui_path, retries=5):
+        self.log.info(f"{h.trace()} Enhancing {ship_gui_path.name}")
+        retry, clicked = 0, False
+        while retry < retries + 1:
+            ship_btn = Button(ship_gui_path)
+            if ship_btn.exist():
+                self.log.info(f"{h.trace()} Clicked Ship1 ...")
+                ship_btn.click_win32()
+                clicked = True
+                break
+            else:
+                self.log.debug(f"{h.trace()} Retrying ({retry}/{retries}) Find {ship_gui_path.name} btn")
+                retry += 1
 
+        if not clicked:
+            return
 
+        # iteratively enhance until unable to
+        while True:
+            self._enhance_process()
 
+    def _enhance_process(self):
+        fill_btn = Button(self.gui_path / "fill.png", confidence=0.7)
+        if fill_btn.exist():
+            self.log.info(f"{h.trace()} Clicked Fill Btn ...")
+            fill_btn.click_win32()
 
+        not_enough = Button(self.gui_path / "not_enough.png")
+        if not_enough.exist():
+            self.log.info(f"{h.trace()} Not Enough to enhance ...")
+            self.log.info(f"{h.trace()} Click Back Button ...")
+            self.back_btn.click_win32()
+            return
+
+        enhance2_btn = Button(self.gui_path / "enhance.png")
+        if enhance2_btn.exist():
+            self.log.info(f"{h.trace()} Clicked Enhance Gold ...")
+            enhance2_btn.click_win32()
+
+        not_enough = Button(self.gui_path / "not_enough.png")
+        if not_enough.exist():
+            self.log.info(f"{h.trace()} Not Enough to enhance ...")
+            self.log.info(f"{h.trace()} Click Back Button ...")
+            self.back_btn.click_win32()
+            return
+
+        # Continue to disassemble Gear
+        cont_btn = Button(self.gui_path / "confirm.png")
+        if cont_btn.exist():
+            self.log.info(f"{h.trace()} Clicked Confirm ...")
+            cont_btn.click_win32()
+
+        dis_btn = Button(self.gui_path / "disassemble.png")
+        if dis_btn.exist():
+            self.log.info(f"{h.trace()} Click Disassemble ...")
+            dis_btn.click_win32()
+
+        tap_cont = Button(self.gui_path / "ttc.png")
+        if tap_cont.exist():
+            self.log.info(f"{h.trace()} Click Tap to continue ...")
+            tap_cont.click_win32()
 
 
 
