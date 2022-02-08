@@ -1,9 +1,18 @@
+# Defaults
 venv/
 .idea/
 try/
 __pycache__
 azurlane/__pycache__
 log
+
+# Specifics
 !azurlane/GUI
 azurlane/GUI/*
 !azurlane/GUI/*.png
+
+*.py
+*.cmd
+!helper.py
+!Logger.py
+!pybot.py
