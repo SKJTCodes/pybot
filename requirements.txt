@@ -7,9 +7,11 @@ Pillow==9.0.0
 PyAutoGUI==0.9.53
 PyGetWindow==0.0.9
 PyMsgBox==1.0.9
+pynput==1.7.6
 pyperclip==1.8.2
 PyRect==0.1.4
 PyScreeze==0.1.28
 pytweening==1.0.4
 pywin32==303
+six==1.16.0
 tqdm==4.62.3
